@@ -1,29 +1,24 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-public class User {
-
-    private Long id;
-
-    @NotEmpty
-    @Email
+@EqualsAndHashCode(callSuper = true)
+public class User extends Entity<Long> {
     private String email;
-
-    @NotEmpty
-    @Pattern(regexp = "\\S+", message = "Логин не должен содержать пробелы")
     private String login;
-
     private String name;
-
-    @PastOrPresent
-    @DateTimeFormat( pattern="dd.MM.yyyy")
     private LocalDate birthday;
+    private final Set<Long> friends;
+
+    public User() {
+        this.friends = new HashSet<>();
+    }
 
     public String getName() {
         return name.isBlank() ? login : name;

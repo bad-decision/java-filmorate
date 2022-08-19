@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.web.dto.request.FilmRequestDto;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -16,7 +17,7 @@ import java.util.Set;
 public class FilmValidationTest {
 
     private final Validator validator;
-    private Film film;
+    private FilmRequestDto filmDto;
 
     @Autowired
     public FilmValidationTest(Validator validator) {
@@ -25,24 +26,25 @@ public class FilmValidationTest {
 
     @BeforeEach
     private void prepareCorrectFilm() {
-        film = new Film();
-        film.setDuration(100);
-        film.setName("Never give up");
-        film.setReleaseDate(LocalDate.of(1895, 12, 29));
+        filmDto = new FilmRequestDto();
+        filmDto.setDuration(100);
+        filmDto.setName("Never give up");
+        filmDto.setRate(2);
+        filmDto.setReleaseDate(LocalDate.of(1895, 12, 29));
     }
 
     @Test
     public void validateIncorrectReleaseDate_mustReturnConstraint() {
-        film.setReleaseDate(LocalDate.of(1895, 12, 28));
+        filmDto.setReleaseDate(LocalDate.of(1895, 12, 28));
 
-        Set<ConstraintViolation<Film>> constraintViolations = validator.validate(film);
+        Set<ConstraintViolation<FilmRequestDto>> constraintViolations = validator.validate(filmDto);
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("Дата должна быть позже 28.12.1895", constraintViolations.iterator().next().getMessage());
     }
 
     @Test
     public void validateCorrectReleaseDate_mustNotReturnConstraint() {
-        Set<ConstraintViolation<Film>> constraintViolations = validator.validate(film);
+        Set<ConstraintViolation<FilmRequestDto>> constraintViolations = validator.validate(filmDto);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 }

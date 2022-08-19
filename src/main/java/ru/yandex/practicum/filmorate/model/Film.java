@@ -1,29 +1,23 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-import ru.yandex.practicum.filmorate.util.DateIsAfter;
+import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-public class Film {
-
-    private Long id;
-
-    @NotBlank
+@EqualsAndHashCode(callSuper = true)
+public class Film extends Entity<Long> {
     private String name;
-
-    @Size(max = 200)
     private String description;
-
-    @DateIsAfter(current = "28.12.1895", message = "Дата должна быть позже 28.12.1895")
-    @DateTimeFormat( pattern="dd.MM.yyyy")
     private LocalDate releaseDate;
-
-    @Positive
     private int duration;
+    private int rate;
+    private Set<Long> likes;
+
+    public Film() {
+        likes = new HashSet<>();
+    }
 }
