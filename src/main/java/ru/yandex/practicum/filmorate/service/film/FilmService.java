@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.service.BaseService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -16,52 +17,18 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class FilmService {
+public class FilmService extends BaseService<Film> {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     @Value("${film.defaultPopularCount}")
     private Long defaultPopularCount;
-    private final static String FILM_IS_NULL = "Film is null";
 
     @Autowired
     public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+        super(filmStorage);
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
-    }
-
-    public Film findById(Long id) {
-        Optional<Film> filmOpt = filmStorage.findById(id);
-
-        if (filmOpt.isEmpty())
-            throw new NotFoundException("Film not found, id=" + id);
-
-        return filmOpt.get();
-    }
-
-    public List<Film> findAll() {
-        return filmStorage.findAll();
-    }
-
-    public Film create(Film film) {
-        if (film == null) {
-            log.error(FILM_IS_NULL);
-            throw new IllegalArgumentException(FILM_IS_NULL);
-        }
-
-        return filmStorage.add(film);
-    }
-
-    public Film update(Film film) {
-        if (film == null) {
-            log.error(FILM_IS_NULL);
-            throw new IllegalArgumentException(FILM_IS_NULL);
-        }
-
-        if (!filmStorage.existsById(film.getId()))
-            throw new NotFoundException("Film not found, id=" + film.getId());
-
-        return filmStorage.update(film);
     }
 
     public List<Film> getPopular(Optional<Long> countOpt) {

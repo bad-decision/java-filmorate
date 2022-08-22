@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.service.BaseService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -12,48 +13,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class UserService {
+public class UserService extends BaseService<User> {
 
     private final UserStorage userStorage;
-    private final static String USER_IS_NULL = "User is null";
 
     @Autowired
     public UserService(UserStorage userStorage) {
+        super(userStorage);
         this.userStorage = userStorage;
-    }
-
-    public User findById(Long id) {
-        Optional<User> userOpt = userStorage.findById(id);
-
-        if (userOpt.isEmpty())
-            throw new NotFoundException("User not found, id=" + id);
-
-        return userOpt.get();
-    }
-
-    public List<User> findAll() {
-        return userStorage.findAll();
-    }
-
-    public User create(User user) {
-        if (user == null) {
-            log.error(USER_IS_NULL);
-            throw new IllegalArgumentException(USER_IS_NULL);
-        }
-
-        return userStorage.add(user);
-    }
-
-    public User update(User user) {
-        if (user == null) {
-            log.error(USER_IS_NULL);
-            throw new IllegalArgumentException(USER_IS_NULL);
-        }
-
-        if (!userStorage.existsById(user.getId()))
-            throw new NotFoundException("User not found, id=" + user.getId());
-
-        return userStorage.update(user);
     }
 
     //region Friends
