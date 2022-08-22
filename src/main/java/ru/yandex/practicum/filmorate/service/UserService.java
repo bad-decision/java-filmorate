@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -9,10 +10,12 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserService {
 
     private final UserStorage userStorage;
+    private final static String USER_IS_NULL = "User is null";
 
     @Autowired
     public UserService(UserStorage userStorage) {
@@ -33,10 +36,20 @@ public class UserService {
     }
 
     public User create(User user) {
+        if (user == null) {
+            log.error(USER_IS_NULL);
+            throw new IllegalArgumentException(USER_IS_NULL);
+        }
+
         return userStorage.add(user);
     }
 
     public User update(User user) {
+        if (user == null) {
+            log.error(USER_IS_NULL);
+            throw new IllegalArgumentException(USER_IS_NULL);
+        }
+
         if (!userStorage.existsById(user.getId()))
             throw new NotFoundException("User not found, id=" + user.getId());
 
@@ -95,7 +108,7 @@ public class UserService {
 
     private List<User> getUsers(List<Long> ids) {
         List<User> users = new ArrayList<>();
-        for (Long id: ids) {
+        for (Long id : ids) {
             Optional<User> userOpt = userStorage.findById(id);
             if (userOpt.isEmpty())
                 throw new NotFoundException("User not found, id=" + id);

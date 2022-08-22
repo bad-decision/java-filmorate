@@ -14,11 +14,7 @@ public class User extends Entity<Long> {
     private String login;
     private String name;
     private LocalDate birthday;
-    private final Set<Long> friends;
-
-    public User() {
-        this.friends = new HashSet<>();
-    }
+    private final Set<Long> friends = new HashSet<>();
 
     public String getName() {
         return name.isBlank() ? login : name;

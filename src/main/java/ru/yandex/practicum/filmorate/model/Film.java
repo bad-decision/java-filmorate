@@ -15,9 +15,5 @@ public class Film extends Entity<Long> {
     private LocalDate releaseDate;
     private int duration;
     private int rate;
-    private Set<Long> likes;
-
-    public Film() {
-        likes = new HashSet<>();
-    }
+    private final Set<Long> likes = new HashSet<>();
 }
