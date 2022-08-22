@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.web.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.web.dto.response.FilmResponseDto;
 
 @Component

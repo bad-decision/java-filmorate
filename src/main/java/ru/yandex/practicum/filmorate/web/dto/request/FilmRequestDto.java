@@ -23,7 +23,7 @@ public class FilmRequestDto {
     @Size(max = 200)
     private String description;
 
-    @DateIsAfter(current = "28.12.1895", message = "Дата должна быть позже 28.12.1895")
+    @DateIsAfter(current = "28.12.1895", message = "Date must be after 28.12.1895")
     @DateTimeFormat( pattern="dd.MM.yyyy")
     private LocalDate releaseDate;
 

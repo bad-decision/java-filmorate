@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.web.dto.request.FilmRequestDto;
 
 import javax.validation.ConstraintViolation;
@@ -39,7 +38,7 @@ public class FilmValidationTest {
 
         Set<ConstraintViolation<FilmRequestDto>> constraintViolations = validator.validate(filmDto);
         Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals("Дата должна быть позже 28.12.1895", constraintViolations.iterator().next().getMessage());
+        Assertions.assertEquals("Date must be after 28.12.1895", constraintViolations.iterator().next().getMessage());
     }
 
     @Test

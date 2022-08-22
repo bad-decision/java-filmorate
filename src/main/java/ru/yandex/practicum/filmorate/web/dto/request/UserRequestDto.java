@@ -22,7 +22,7 @@ public class UserRequestDto {
     private String email;
 
     @NotEmpty
-    @Pattern(regexp = "\\S+", message = "Логин не должен содержать пробелы")
+    @Pattern(regexp = "\\S+", message = "Login must not contain spaces")
     private String login;
 
     private String name;
