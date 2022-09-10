@@ -1,4 +1,6 @@
-package ru.yandex.practicum.filmorate.util;
+package ru.yandex.practicum.filmorate.web.validator.impl;
+
+import ru.yandex.practicum.filmorate.web.validator.DateIsAfter;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
