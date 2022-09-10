@@ -2,5 +2,5 @@
 Something like Kinopoisk
 
 <p align="center">
-  <img src="https://dbdiagram.io/d/631cd08b0911f91ba57d419b" alt="Db schema"/>
+  <img src="https://github.com/bad-decision/java-filmorate/blob/main/DB.png" alt="Db schema"/>
 </p>
