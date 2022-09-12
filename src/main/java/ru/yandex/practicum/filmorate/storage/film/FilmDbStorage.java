@@ -115,7 +115,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findAll() {
-        String findAllQuery = "SELECT film_id, name, description, release_date, duration, rate, mpa_id FROM films";
+        String findAllQuery = "SELECT film_id, f.name as name, description, release_date, duration, rate, m.mpa_id as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id";
         return jdbcTemplate.query(findAllQuery, new FilmMapper());
     }
 
@@ -141,8 +141,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopular(Long count) {
-        String findPopularQuery = "SELECT film_id, name, description, release_date, duration, rate, mpa_id FROM films WHERE film_id IN " +
-                "(SELECT f.film_id FROM films f LEFT JOIN likes l ON f.film_id=l.film_id GROUP BY f.film_id ORDER BY COUNT(f.film_id) DESC) LIMIT ?";
+        String findPopularQuery = "SELECT film_id, f.name as name, description, release_date, duration, rate, m.mpa_id as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id WHERE film_id IN " +
+                "(SELECT f.film_id FROM films f LEFT JOIN likes l ON f.film_id=l.film_id GROUP BY f.film_id ORDER BY COUNT(f.film_id) DESC LIMIT ?) ";
         return jdbcTemplate.query(findPopularQuery, new FilmMapper(), count);
     }
 }
