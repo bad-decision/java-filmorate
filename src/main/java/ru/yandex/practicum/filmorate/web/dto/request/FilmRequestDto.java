@@ -3,12 +3,15 @@ package ru.yandex.practicum.filmorate.web.dto.request;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.yandex.practicum.filmorate.web.dto.GenreDto;
+import ru.yandex.practicum.filmorate.web.dto.MpaDto;
 import ru.yandex.practicum.filmorate.web.validator.DateIsAfter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -27,11 +30,13 @@ public class FilmRequestDto {
     @DateTimeFormat( pattern="dd.MM.yyyy")
     private LocalDate releaseDate;
 
-    @Positive
-    private int duration;
+    private Integer duration;
 
-    @Positive
-    private int rate;
+    private Integer rate;
+
+    private MpaDto mpa;
 
     private Set<Long> likes;
+
+    private Set<GenreDto> genres;
 }

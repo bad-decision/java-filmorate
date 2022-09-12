@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -25,19 +26,20 @@ public class FilmService extends BaseService<Film> {
     private Long defaultPopularCount;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
         super(filmStorage);
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
 
     public List<Film> getPopular(Optional<Long> countOpt) {
-        List<Film> films = filmStorage.findAll();
         Long count = countOpt.orElseGet(() -> defaultPopularCount);
-
-        return films.stream().sorted((x, y) -> y.getLikes().size() - x.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getPopular(count);
+//        Long count = countOpt.orElseGet(() -> defaultPopularCount);
+//
+//        return films.stream().sorted((x, y) -> y.getLikes().size() - x.getLikes().size())
+//                .limit(count)
+//                .collect(Collectors.toList());
     }
 
     //region Like
@@ -50,9 +52,7 @@ public class FilmService extends BaseService<Film> {
         if (!userStorage.existsById(userId))
             throw new NotFoundException("User not found, id=" + userId);
 
-        Film film = filmOpt.get();
-        film.getLikes().add(userId);
-        return film;
+        return filmStorage.addLike(id, userId);
     }
 
     public Film deleteLike(Long id, Long userId) {
@@ -70,8 +70,7 @@ public class FilmService extends BaseService<Film> {
         if (!likes.contains(userId))
             throw new NotFoundException("Like not found, id=" + id + ", userId=" + userId);
 
-        likes.remove(userId);
-        return film;
+        return filmStorage.deleteLike(id, userId);
     }
     //endregion
 }

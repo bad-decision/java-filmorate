@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.film.Film;
@@ -23,27 +22,25 @@ import java.util.stream.Collectors;
 public class FilmController {
 
     private final FilmService filmService;
-    private final ConversionService conversionService;
     private final FilmMapper filmMapper;
 
     @Autowired
-    public FilmController(FilmService filmService, ConversionService conversionService, FilmMapper filmMapper) {
+    public FilmController(FilmService filmService, FilmMapper filmMapper) {
         this.filmService = filmService;
-        this.conversionService = conversionService;
         this.filmMapper = filmMapper;
     }
 
     @GetMapping("/{id}")
     public FilmResponseDto getById(@PathVariable Long id) {
         Film film = filmService.findById(id);
-        return conversionService.convert(film, FilmResponseDto.class);
+        return filmMapper.mapToFilmResponseDto(film);
     }
 
     @GetMapping
     public List<FilmResponseDto> getAll() {
         List<Film> films = filmService.findAll();
         return films.stream()
-                .map(film -> conversionService.convert(film, FilmResponseDto.class))
+                .map(filmMapper::mapToFilmResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -51,7 +48,7 @@ public class FilmController {
     public List<FilmResponseDto> getPopular(@RequestParam Optional<Long> count) {
         List<Film> films = filmService.getPopular(count);
         return films.stream()
-                .map(film -> conversionService.convert(film, FilmResponseDto.class))
+                .map(filmMapper::mapToFilmResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -60,7 +57,7 @@ public class FilmController {
         Film film = filmMapper.mapToFilm(filmDto);
         film = filmService.create(film);
         log.info("{} successfully added", film);
-        return conversionService.convert(film, FilmResponseDto.class);
+        return filmMapper.mapToFilmResponseDto(film);
     }
 
     @PutMapping
@@ -68,20 +65,20 @@ public class FilmController {
         Film film = filmMapper.mapToFilm(filmDto);
         film = filmService.update(film);
         log.info("{} successfully updated", film);
-        return conversionService.convert(film, FilmResponseDto.class);
+        return filmMapper.mapToFilmResponseDto(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public FilmResponseDto addLike(@PathVariable Long id, @PathVariable Long userId) {
         Film film = filmService.addLike(id, userId);
         log.info("{} successfully add like", film);
-        return conversionService.convert(film, FilmResponseDto.class);
+        return filmMapper.mapToFilmResponseDto(film);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public FilmResponseDto deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         Film film = filmService.deleteLike(id, userId);
         log.info("{} successfully delete like", film);
-        return conversionService.convert(film, FilmResponseDto.class);
+        return filmMapper.mapToFilmResponseDto(film);
     }
 }
