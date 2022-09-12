@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.genre.Genre;
+import ru.yandex.practicum.filmorate.model.like.Like;
 import ru.yandex.practicum.filmorate.storage.genre.GenreMapper;
 
 import java.sql.Date;
@@ -17,6 +18,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class FilmDbStorage implements FilmStorage {
@@ -98,9 +100,9 @@ public class FilmDbStorage implements FilmStorage {
             List<Genre> genres = jdbcTemplate.query(findGenresByFilmIdQuery, new GenreMapper(), id);
             filmOpt.get().getGenres().addAll(genres);
 
-            String findLikesByFilmIdQuery = "SELECT user_id FROM likes WHERE film_id=?";
-            List<Long> likes = jdbcTemplate.query(findLikesByFilmIdQuery, new BeanPropertyRowMapper<>(), id);
-            filmOpt.get().getLikes().addAll(likes);
+            String findLikesByFilmIdQuery = "SELECT like_id, user_id, film_id FROM likes WHERE film_id=?";
+            List<Like> likes = jdbcTemplate.query(findLikesByFilmIdQuery, new LikeMapper(), id);
+            filmOpt.get().getLikes().addAll(likes.stream().map(Like::getUserId).collect(Collectors.toList()));
         }
 
         return filmOpt;
