@@ -35,11 +35,6 @@ public class FilmService extends BaseService<Film> {
     public List<Film> getPopular(Optional<Long> countOpt) {
         Long count = countOpt.orElseGet(() -> defaultPopularCount);
         return filmStorage.getPopular(count);
-//        Long count = countOpt.orElseGet(() -> defaultPopularCount);
-//
-//        return films.stream().sorted((x, y) -> y.getLikes().size() - x.getLikes().size())
-//                .limit(count)
-//                .collect(Collectors.toList());
     }
 
     //region Like

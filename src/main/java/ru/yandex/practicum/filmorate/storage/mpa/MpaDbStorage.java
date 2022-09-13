@@ -7,12 +7,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.mpa.Mpa;
-import ru.yandex.practicum.filmorate.storage.Storage;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

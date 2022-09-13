@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
@@ -90,17 +89,19 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> findById(Long id) {
-        String findByIdQuery = "SELECT film_id, f.name as name, description, release_date, duration, rate, m.mpa_id as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id WHERE film_id=?";
+        String findByIdQuery = "SELECT film_id, f.name as name, description, release_date, duration, rate, m.mpa_id " +
+                "as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id WHERE film_id=?";
         Optional<Film> filmOpt = jdbcTemplate.query(findByIdQuery, new FilmMapper(), id)
                 .stream()
                 .findAny();
 
         if (filmOpt.isPresent()) {
-            String findGenresByFilmIdQuery = "SELECT fg.genre_id as genre_id, name FROM film_genres fg JOIN genres g ON fg.genre_id=g.genre_id WHERE film_id=?";
+            String findGenresByFilmIdQuery = "SELECT fg.genre_id as genre_id, name FROM film_genres fg JOIN genres g " +
+                    "ON fg.genre_id=g.genre_id WHERE film_id=?";
             List<Genre> genres = jdbcTemplate.query(findGenresByFilmIdQuery, new GenreMapper(), id);
             filmOpt.get().getGenres().addAll(genres);
 
-            String findLikesByFilmIdQuery = "SELECT like_id, user_id, film_id FROM likes WHERE film_id=?";
+            String findLikesByFilmIdQuery = "SELECT user_id, film_id FROM likes WHERE film_id=?";
             List<Like> likes = jdbcTemplate.query(findLikesByFilmIdQuery, new LikeMapper(), id);
             filmOpt.get().getLikes().addAll(likes.stream().map(Like::getUserId).collect(Collectors.toList()));
         }
@@ -115,7 +116,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findAll() {
-        String findAllQuery = "SELECT film_id, f.name as name, description, release_date, duration, rate, m.mpa_id as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id";
+        String findAllQuery = "SELECT film_id, f.name as name, description, release_date, duration, rate, " +
+                "m.mpa_id as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id";
         return jdbcTemplate.query(findAllQuery, new FilmMapper());
     }
 
@@ -141,8 +143,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopular(Long count) {
-        String findPopularQuery = "SELECT film_id, f.name as name, description, release_date, duration, rate, m.mpa_id as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id WHERE film_id IN " +
-                "(SELECT f.film_id FROM films f LEFT JOIN likes l ON f.film_id=l.film_id GROUP BY f.film_id ORDER BY COUNT(f.film_id) DESC LIMIT ?) ";
-        return jdbcTemplate.query(findPopularQuery, new FilmMapper(), count);
+        String findPopularQuery = "SELECT film_id, f.name as name, description, release_date, duration, rate, " +
+                "m.mpa_id as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id WHERE film_id IN " +
+                "(SELECT f.film_id FROM films f LEFT JOIN likes l ON f.film_id=l.film_id GROUP BY f.film_id ORDER BY COUNT(l.user_id) DESC LIMIT ?) ";
+        return jdbcTemplate.query(findPopularQuery, new FilmMapper(), count); // WHERE l.film_id IS NOT NULL
     }
 }

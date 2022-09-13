@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.friendship.Friendship;
 import ru.yandex.practicum.filmorate.model.user.User;
 
 import java.sql.Date;
@@ -77,5 +78,39 @@ public class UserDbStorage implements UserStorage {
     public void deleteById(Long id) {
         String deleteByIdQuery = "DELETE FROM users WHERE user_id=?";
         jdbcTemplate.update(deleteByIdQuery, id);
+    }
+
+    @Override
+    public User addFriend(Long userId, Long friendId) {
+        String checkExistFriendshipQuery = "SELECT from_user_id, to_user_id, is_confirmed FROM friendship WHERE from_user_id=? AND to_user_id=?";
+        Optional<Friendship> existFriendship = jdbcTemplate.query(checkExistFriendshipQuery, new FriendshipMapper(), friendId, userId)
+                .stream()
+                .findAny();
+
+        if (existFriendship.isPresent() && !existFriendship.get().isConfirmed()) {
+            String insertLikeQuery = "UPDATE friendship SET is_confirmed=1 WHERE from_user_id=? AND to_user_id=?";
+            jdbcTemplate.update(insertLikeQuery, friendId, userId);
+        }
+        else {
+            String insertLikeQuery = "INSERT INTO friendship (from_user_id, to_user_id) VALUES (?,?)";
+            jdbcTemplate.update(insertLikeQuery, friendId, userId);
+        }
+
+        return findById(userId).orElse(null);
+    }
+
+    @Override
+    public User deleteFriend(Long userId, Long friendId) {
+        String deleteLikeQuery = "DELETE FROM friendship WHERE from_user_id=? AND to_user_id=?";
+        jdbcTemplate.update(deleteLikeQuery, friendId, userId);
+        return findById(userId).orElse(null);
+    }
+
+    @Override
+    public List<User> getFriends(Long id) {
+        String findFriendsQuery = "SELECT user_id, name, login, email, birthday FROM users WHERE user_id IN " +
+                "(SELECT to_user_id FROM friendship WHERE from_user_id=? AND is_confirmed=1 UNION " +
+                "SELECT from_user_id FROM friendship WHERE to_user_id=?)";
+        return jdbcTemplate.query(findFriendsQuery, new UserMapper(), id, id);
     }
 }
