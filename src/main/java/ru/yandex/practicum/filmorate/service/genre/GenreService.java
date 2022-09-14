@@ -8,11 +8,8 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 @Service
 public class GenreService extends BaseService<Genre> {
-    private final GenreStorage genreStorage;
-
     @Autowired
     public GenreService(GenreStorage genreStorage) {
         super(genreStorage);
-        this.genreStorage = genreStorage;
     }
 }

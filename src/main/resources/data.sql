@@ -6,7 +6,7 @@ VALUES ( 'Комедия' ),
        ('Документальный'),
        ('Боевик');
 
-INSERT INTO MPA (NAME)
+INSERT INTO mpa (NAME)
 VALUES ( 'G' ),
        ('PG'),
        ('PG-13'),

@@ -8,11 +8,8 @@ import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 @Service
 public class MpaService extends BaseService<Mpa> {
-    private final MpaStorage mpaStorage;
-
     @Autowired
     public MpaService(MpaStorage mpaStorage) {
         super(mpaStorage);
-        this.mpaStorage = mpaStorage;
     }
 }

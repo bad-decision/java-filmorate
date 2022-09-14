@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.genre;
 
 import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.model.genre.Genre;
-import ru.yandex.practicum.filmorate.model.user.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

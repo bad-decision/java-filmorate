@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.model.Entity;
 
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
@@ -15,7 +15,7 @@ public class User extends Entity<Long> {
     private String login;
     private String name;
     private LocalDate birthday;
-    private final Set<Long> friends = new HashSet<>();
+    private final Set<Long> friends = new LinkedHashSet<>();
 
     public String getName() {
         return name.isBlank() ? login : name;
