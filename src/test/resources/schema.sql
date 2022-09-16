@@ -8,18 +8,18 @@ DROP TABLE IF EXISTS genres;
 
 CREATE TABLE genres (
     genre_id bigint PRIMARY KEY AUTO_INCREMENT,
-    name varchar
+    name varchar(64)
 );
 
 CREATE TABLE mpa (
     mpa_id bigint PRIMARY KEY AUTO_INCREMENT,
-    name varchar
+    name varchar(64)
 );
 
 CREATE TABLE films (
     film_id bigint PRIMARY KEY AUTO_INCREMENT,
-    name varchar,
-    description varchar,
+    name varchar(128),
+    description varchar(512),
     release_date date,
     duration int,
     rate int,
@@ -28,10 +28,10 @@ CREATE TABLE films (
 
 CREATE TABLE users (
     user_id bigint PRIMARY KEY AUTO_INCREMENT,
-    email varchar,
-    login varchar,
+    email varchar(64),
+    login varchar(64),
     birthday date,
-    name varchar
+    name varchar(64)
 );
 
 CREATE TABLE film_genres (

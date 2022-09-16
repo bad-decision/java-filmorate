@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.web.dto.request.FilmRequestDto;
+import ru.yandex.practicum.filmorate.web.dto.request.FilmRestCommand;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -16,7 +16,7 @@ import java.util.Set;
 public class FilmValidationTest {
 
     private final Validator validator;
-    private FilmRequestDto filmDto;
+    private FilmRestCommand filmDto;
 
     @Autowired
     public FilmValidationTest(Validator validator) {
@@ -25,7 +25,7 @@ public class FilmValidationTest {
 
     @BeforeEach
     private void prepareCorrectFilm() {
-        filmDto = new FilmRequestDto();
+        filmDto = new FilmRestCommand();
         filmDto.setDuration(100);
         filmDto.setName("Never give up");
         filmDto.setRate(2);
@@ -36,14 +36,14 @@ public class FilmValidationTest {
     public void validateIncorrectReleaseDate_mustReturnConstraint() {
         filmDto.setReleaseDate(LocalDate.of(1895, 12, 28));
 
-        Set<ConstraintViolation<FilmRequestDto>> constraintViolations = validator.validate(filmDto);
+        Set<ConstraintViolation<FilmRestCommand>> constraintViolations = validator.validate(filmDto);
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("Date must be after 28.12.1895", constraintViolations.iterator().next().getMessage());
     }
 
     @Test
     public void validateCorrectReleaseDate_mustNotReturnConstraint() {
-        Set<ConstraintViolation<FilmRequestDto>> constraintViolations = validator.validate(filmDto);
+        Set<ConstraintViolation<FilmRestCommand>> constraintViolations = validator.validate(filmDto);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 }

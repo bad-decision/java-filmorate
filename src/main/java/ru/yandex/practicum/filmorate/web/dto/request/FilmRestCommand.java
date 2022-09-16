@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class FilmRequestDto {
+public class FilmRestCommand {
 
     private Long id;
 

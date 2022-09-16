@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreMapper;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +24,6 @@ import java.util.stream.Collectors;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final String insertFilmGenreQuery = "INSERT INTO film_genres (film_id, genre_id) VALUES (?,?)";
-
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -43,10 +42,7 @@ public class FilmDbStorage implements FilmStorage {
 
         Long filmId = (Long) keyHolder.getKey();
 
-        for (Genre genre : item.getGenres()) {
-            jdbcTemplate.update(insertFilmGenreQuery, filmId, genre.getId());
-        }
-
+        addFilmGenres(filmId, new ArrayList<>(item.getGenres()));
         return findById(filmId).orElse(null);
     }
 
@@ -71,19 +67,7 @@ public class FilmDbStorage implements FilmStorage {
             return ps;
         });
 
-        String deleteFilmGenreQuery = "DELETE FROM film_genres WHERE film_id=? AND genre_id=?";
-        for (Genre existFilmGenre : existFilm.getGenres()) {
-            if (item.getGenres().stream().noneMatch(x -> x.getId().equals(existFilmGenre.getId()))) {
-                jdbcTemplate.update(deleteFilmGenreQuery, item.getId(), existFilmGenre.getId());
-            }
-        }
-
-        for (Genre filmGenre : item.getGenres()) {
-            if (existFilm.getGenres().stream().noneMatch(x -> x.getId().equals(filmGenre.getId()))) {
-                jdbcTemplate.update(insertFilmGenreQuery, item.getId(), filmGenre.getId());
-            }
-        }
-
+        updateFilmGenres(existFilm, item);
         return findById(item.getId()).orElse(null);
     }
 
@@ -147,5 +131,40 @@ public class FilmDbStorage implements FilmStorage {
                 "m.mpa_id as mpa_id, m.name as mpa_name FROM films f JOIN mpa m ON f.mpa_id=m.mpa_id WHERE film_id IN " +
                 "(SELECT f.film_id FROM films f LEFT JOIN likes l ON f.film_id=l.film_id GROUP BY f.film_id ORDER BY COUNT(l.user_id) DESC LIMIT ?) ";
         return jdbcTemplate.query(findPopularQuery, new FilmMapper(), count);
+    }
+
+    private void updateFilmGenres(Film existFilm, Film updateFilm) {
+        String deleteFilmGenreQuery = "DELETE FROM film_genres WHERE film_id=? AND genre_id=?";
+
+        List<Genre> genresToDelete = existFilm.getGenres()
+                .stream()
+                .filter(x -> updateFilm.getGenres()
+                        .stream()
+                        .noneMatch(y -> y.getId().equals(x.getId())))
+                .collect(Collectors.toList());
+
+        jdbcTemplate.batchUpdate(deleteFilmGenreQuery, genresToDelete, genresToDelete.size(),
+                (ps, argument) -> {
+                    ps.setLong(1, updateFilm.getId());
+                    ps.setLong(2, argument.getId());
+                });
+
+        List<Genre> genresToAdd = updateFilm.getGenres()
+                .stream()
+                .filter(x -> existFilm.getGenres()
+                        .stream()
+                        .noneMatch(y -> y.getId().equals(x.getId())))
+                .collect(Collectors.toList());
+
+        addFilmGenres(existFilm.getId(), genresToAdd);
+    }
+
+    private void addFilmGenres(Long filmId, List<Genre> genres) {
+        String insertFilmGenreQuery = "INSERT INTO film_genres (film_id, genre_id) VALUES (?,?)";
+        jdbcTemplate.batchUpdate(insertFilmGenreQuery, genres, genres.size(),
+                (ps, argument) -> {
+                    ps.setLong(1, filmId);
+                    ps.setLong(2, argument.getId());
+                });
     }
 }
