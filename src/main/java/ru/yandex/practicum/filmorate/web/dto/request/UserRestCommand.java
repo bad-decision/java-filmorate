@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class UserRequestDto {
+public class UserRestCommand {
 
     private Long id;
 

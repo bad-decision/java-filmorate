@@ -40,22 +40,7 @@ public class InMemoryStorage<T extends Entity<Long>> implements Storage<T, Long>
     }
 
     @Override
-    public long count() {
-        return items.values().size();
-    }
-
-    @Override
     public void deleteById(Long id) {
         items.remove(id);
-    }
-
-    @Override
-    public void delete(T item) {
-        items.remove(item.getId());
-    }
-
-    @Override
-    public void deleteAll() {
-        items.clear();
     }
 }
